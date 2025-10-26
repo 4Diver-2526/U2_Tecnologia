@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión: Técnicos de Emergencia</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fuentes e iconos (usaremos emojis para simplicidad y atractivo) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estilos personalizados */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* bg-gray-900 */
+        }
+        
+        /* Estilos para las bombillas interactivas */
+        .bulb {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid #6b7280; /* bg-gray-500 */
+            position: relative;
+            display: flex; /* Para centrar el texto de la bombilla */
+            align-items: center; /* Para centrar el texto de la bombilla */
+            justify-content: center; /* Para centrar el texto de la bombilla */
+            font-weight: bold;
+        }
+        
+        .bulb-on {
+            background-color: #fef08a; /* yellow-200 */
+            border-color: #facc15; /* yellow-400 */
+            box-shadow: 0 0 20px #facc15, 0 0 30px #fef08a;
+            color: #713f12; /* Color de texto para bombilla encendida */
+        }
+        
+        .bulb-off {
+            background-color: #374151; /* bg-gray-700 */
+            border-color: #4b5563; /* bg-gray-600 */
+            color: #d1d5db; /* Color de texto para bombilla apagada */
+        }
+        
+        /* Pequeña animación de "completado" */
+        .completed-glow {
+            box-shadow: 0 0 15px #10b981; /* green-500 */
+        }
+    </style>
+</head>
+<body class="text-white">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl min-h-screen">
+        
+        <!-- Pantalla de Inicio (Dashboard) -->
+        <div id="home" class="screen space-y-6">
+            <h1 class="text-4xl font-bold text-center text-yellow-400">⚡ Misión: Técnicos de Emergencia 💡</h1>
+            <p class="text-lg text-gray-300 text-center">¡La ciudad tiene problemas eléctricos! Tu misión es resolver los fallos en 4 zonas clave. Selecciona una estación para empezar.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+                <!-- Estación 1 -->
+                <button id="nav-station1" onclick="showScreen('station1')" class="bg-gray-800 p-6 rounded-xl shadow-lg hover:bg-gray-700 transition-all text-left space-y-2 border-2 border-transparent">
+                    <h2 class="text-2xl font-semibold text-yellow-400">Estación 1: La Casa de Patricia</h2>
+                    <p class="text-gray-400">Calcula la potencia y la energía para evitar que salten los plomos.</p>
+                    <div id="status-s1" class="text-lg font-bold text-red-500">Estado: PENDIENTE</div>
+                </button>
+                
+                <!-- Estación 2 -->
+                <button id="nav-station2" onclick="showScreen('station2')" class="bg-gray-800 p-6 rounded-xl shadow-lg hover:bg-gray-700 transition-all text-left space-y-2 border-2 border-transparent">
+                    <h2 class="text-2xl font-semibold text-yellow-400">Estación 2: Las Luces de Navidad</h2>
+                    <p class="text-gray-400">Investiga por qué se ha apagado la guirnalda de luces (Circuito en Serie).</p>
+                    <div id="status-s2" class="text-lg font-bold text-red-500">Estado: PENDIENTE</div>
+                </button>
+                
+                <!-- Estación 3 -->
+                <button id="nav-station3" onclick="showScreen('station3')" class="bg-gray-800 p-6 rounded-xl shadow-lg hover:bg-gray-700 transition-all text-left space-y-2 border-2 border-transparent">
+                    <h2 class="text-2xl font-semibold text-yellow-400">Estación 3: El Hogar</h2>
+                    <p class="text-gray-400">Comprueba la instalación de una vivienda (Circuito en Paralelo).</p>
+                    <div id="status-s3" class="text-lg font-bold text-red-500">Estado: PENDIENTE</div>
+                </button>
+                
+                <!-- Estación 4 -->
+                <button id="nav-station4" onclick="showScreen('station4')" class="bg-gray-800 p-6 rounded-xl shadow-lg hover:bg-gray-700 transition-all text-left space-y-2 border-2 border-transparent">
+                    <h2 class="text-2xl font-semibold text-yellow-400">Estación 4: El Cuadro Eléctrico</h2>
+                    <p class="text-gray-400">Calcula las resistencias totales para reconfigurar la centralita.</p>
+                    <div id="status-s4" class="text-lg font-bold text-red-500">Estado: PENDIENTE</div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Pantalla Estación 1: Potencia y Energía -->
+        <div id="station1" class="screen hidden space-y-6 bg-gray-800 p-6 md:p-8 rounded-xl shadow-lg">
+            <button onclick="showScreen('home')" class="text-yellow-400 hover:text-yellow-300">&larr; Volver al Dashboard</button>
+            <h2 class="text-3xl font-bold text-yellow-400">Estación 1: La Casa de Patricia 🚗</h2>
+            
+            <!-- Pregunta 1.1 -->
+            <div class="space-y-2">
+                <label for="s1-q1" class="text-lg font-semibold">1. Un secador de pelo funciona a 230 V y consume una intensidad de 5 A. ¿Cuál es su potencia (P) en vatios (W)?</label>
+                <p class="text-sm text-gray-400">Pista: $P = V \cdot I$</p>
+                <div class="flex gap-4">
+                    <input type="number" id="s1-q1" class="w-full bg-gray-700 p-2 rounded text-white" placeholder="Introduce tu respuesta (ej: 1000)">
+                    <button onclick="checkAnswer('s1', 'q1', 1150)" class="bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-4 rounded-lg">Comprobar</button>
+                </div>
+                <p id="feedback-s1-q1" class="font-semibold"></p>
+            </div>
+            
+            <!-- Pregunta 1.2 -->
+            <div class="space-y-2">
+                <label for="s1-q2" class="text-lg font-semibold">2. Una bombilla de 60 W está encendida durante 7 horas. ¿Cuánta energía consume en kilovatios-hora (kWh)?</label>
+                <p class="text-sm text-gray-400">Pista: $E = P \cdot t$. ¡Recuerda pasar 60 W a kW (dividiendo entre 1000)!</p>
+                <div class="flex gap-4">
+                    <input type="number" id="s1-q2" class="w-full bg-gray-700 p-2 rounded text-white" placeholder="Introduce tu respuesta (ej: 0.5)">
+                    <button onclick="checkAnswer('s1', 'q2', 0.42)" class="bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-4 rounded-lg">Comprobar</button>
+                </div>
+                <p id="feedback-s1-q2" class="font-semibold"></p>
+            </div>
+
+            <!-- Pregunta 1.3 -->
+            <div class="space-y-2">
+                <p class="text-lg font-semibold">3. ¿Por qué la compañía eléctrica nos cobra la Energía (kWh) y no la Potencia (W)?</p>
+                <div class="space-y-2" id="s1-q3-options">
+                    <button onclick="checkChoice('s1', 'q3', 'a')" class="block w-full text-left bg-gray-700 p-3 rounded-lg hover:bg-gray-600">A) Porque la Potencia es la energía consumida a lo largo de un tiempo.</button>
+                    <button onclick="checkChoice('s1', 'q3', 'b')" class="block w-full text-left bg-gray-700 p-3 rounded-lg hover:bg-gray-600">B) Porque la Energía es la potencia consumida a lo largo de un tiempo.</button>
+                    <button onclick="checkChoice('s1', 'q3', 'c')" class="block w-full text-left bg-gray-700 p-3 rounded-lg hover:bg-gray-600">C) Porque la Potencia es más cara que la Energía.</button>
+                </div>
+                <p id="feedback-s1-q3" class="font-semibold"></p>
+            </div>
+        </div>
+        
+        <!-- Pantalla Estación 2: Circuito en Serie -->
+        <div id="station2" class="screen hidden space-y-6 bg-gray-800 p-6 md:p-8 rounded-xl shadow-lg">
+            <button onclick="showScreen('home')" class="text-yellow-400 hover:text-yellow-300">&larr; Volver al Dashboard</button>
+            <h2 class="text-3xl font-bold text-yellow-400">Estación 2: Las Luces de Navidad (Serie) 🎄</h2>
+            <p class="text-lg">Las 3 bombillas de la guirnalda están conectadas en serie. Haz clic en una bombilla para simular que se "funde" o la quitas.</p>
+            
+            <!-- Simulación Serie -->
+            <div class="bg-gray-900 p-6 rounded-lg flex justify-center items-center gap-8 relative">
+                <!-- Cable -->
+                <div class="absolute h-2 bg-gray-600" style="width: 280px; z-index: -1;"></div>
+                <!-- Bombillas -->
+                <div id="s2-bulb1" class="bulb bulb-on" onclick="interactCircuit('series', 1)">B1</div>
+                <div id="s2-bulb2" class="bulb bulb-on" onclick="interactCircuit('series', 2)">B2</div>
+                <div id="s2-bulb3" class="bulb bulb-on" onclick="interactCircuit('series', 3)">B3</div>
+            </div>
+            <div class="text-center">
+                 <button onclick="resetCircuit('series')" class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded-lg">Resetear</button>
+            </div>
+            <p id="feedback-s2-sim" class="font-semibold text-lg text-center h-6"></p>
+
+            <!-- Pregunta 2 -->
+            <div class="space-y-2 pt-4">
+                <p class="text-lg font-semibold">Basándote en lo que has visto, ¿qué ocurre en un circuito en serie si un elemento (bombilla) deja de funcionar?</p>
+                <div class="space-y-2" id="s2-q1-options">
+                    <button onclick="checkChoice('s2', 'q1', 'a')" class="block w-full text-left bg-gray-700 p-3 rounded-lg hover:bg-gray-600">A) Solo se apaga esa bombilla, el resto sigue funcionando.</button>
+                    <button onclick="checkChoice('s2', 'q1', 'b')" class="block w-full text-left bg-gray-700 p-3 rounded-lg hover:bg-gray-600">B) El circuito se interrumpe y TODOS los elementos dejan de funcionar.</button>
+                    <button onclick="checkChoice('s2', 'q1', 'c')" class="block w-full text-left bg-gray-700 p-3 rounded-lg hover:bg-gray-600">C) Las otras bombillas lucen con más intensidad.</button>
+                </div>
+                <p id="feedback-s2-q1" class="font-semibold"></p>
+            </div>
+        </div>
+        
+        <!-- Pantalla Estación 3: Circuito en Paralelo -->
+        <div id="station3" class="screen hidden space-y-6 bg-gray-800 p-6 md:p-8 rounded-xl shadow-lg">
+            <button onclick="showScreen('home')" class="text-yellow-400 hover:text-yellow-300">&larr; Volver al Dashboard</button>
+            <h2 class="text-3xl font-bold text-yellow-400">Estación 3: El Hogar (Paralelo) 🏠</h2>
+            <p class="text-lg">Las 3 bombillas de la casa están conectadas en paralelo. Haz clic en una bombilla para simular que se "funde" o la quitas.</p>
+            
+            <!-- Simulación Paralelo -->
+            <div class="bg-gray-900 p-6 rounded-lg flex justify-center items-center gap-8 relative">
+                <!-- Cables -->
+                <div class="absolute h-2 bg-gray-600 top-4" style="width: 280px; z-index: -1;"></div>
+                <div class="absolute h-2 bg-gray-600 bottom-4" style="width: 280px; z-index: -1;"></div>
+                <div class="absolute w-2 bg-gray-600" style="height: 100%; left: 100px; z-index: -1;"></div>
+                <div class="absolute w-2 bg-gray-600" style="height: 100%; left: 188px; z-index: -1;"></div>
+                <div class="absolute w-2 bg-gray-600" style="height: 100%; right: 100px; z-index: -1;"></div>
+                
+                <!-- Bombillas -->
+                <div id="s3-bulb1" class="bulb bulb-on" onclick="interactCircuit('parallel', 1)">B1</div>
+                <div id="s3-bulb2" class="bulb bulb-on" onclick="interactCircuit('parallel', 2)">B2</div>
+                <div id="s3-bulb3" class="bulb bulb-on" onclick="interactCircuit('parallel', 3)">B3</div>
+            </div>
+             <div class="text-center">
+                 <button onclick="resetCircuit('parallel')" class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded-lg">Resetear</button>
+            </div>
+            <p id="feedback-s3-sim" class="font-semibold text-lg text-center h-6"></p>
+
+            <!-- Pregunta 3 -->
+            <div class="space-y-2 pt-4">
+                <p class="text-lg font-semibold">Basándote en lo que has visto, ¿por qué las instalaciones de las viviendas se hacen en paralelo?</p>
+                <div class="space-y-2" id="s3-q1-options">
+                    <button onclick="checkChoice('s3', 'q1', 'a')" class="block w-full text-left bg-gray-700 p-3 rounded-lg hover:bg-gray-600">A) Porque si se funde una bombilla, el resto sigue funcionando.</button>
+                    <button onclick="checkChoice('s3', 'q1', 'b')" class="block w-full text-left bg-gray-700 p-3 rounded-lg hover:bg-gray-600">B) Porque es más barato y se usa menos cable.</button>
+                    <button onclick="checkChoice('s3', 'q1', 'c')" class="block w-full text-left bg-gray-700 p-3 rounded-lg hover:bg-gray-600">C) Porque en paralelo todas las bombillas lucen menos y se ahorra energía.</button>
+                </div>
+                <p id="feedback-s3-q1" class="font-semibold"></p>
+            </div>
+        </div>
+        
+        <!-- Pantalla Estación 4: Cálculos -->
+        <div id="station4" class="screen hidden space-y-6 bg-gray-800 p-6 md:p-8 rounded-xl shadow-lg">
+            <button onclick="showScreen('home')" class="text-yellow-400 hover:text-yellow-300">&larr; Volver al Dashboard</button>
+            <h2 class="text-3xl font-bold text-yellow-400">Estación 4: El Cuadro Eléctrico 🧮</h2>
+            
+            <!-- Pregunta 4.1 -->
+            <div class="space-y-2">
+                <label for="s4-q1" class="text-lg font-semibold">1. (Serie) Dos resistencias $R_1 = 330 \Omega$ y $R_2 = 150 \Omega$ están en serie. ¿Cuál es la Resistencia Total en ohmios?</label>
+                <p class="text-sm text-gray-400">Pista: $R_T = R_1 + R_2$</p>
+                <div class="flex gap-4">
+                    <input type="number" id="s4-q1" class="w-full bg-gray-700 p-2 rounded text-white" placeholder="Introduce tu respuesta (ej: 500)">
+                    <button onclick="checkAnswer('s4', 'q1', 480)" class="bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-4 rounded-lg">Comprobar</button>
+                </div>
+                <p id="feedback-s4-q1" class="font-semibold"></p>
+            </div>
+            
+            <!-- Pregunta 4.2 -->
+            <div class="space-y-2">
+                <label for="s4-q2" class="text-lg font-semibold">2. (Paralelo) Dos resistencias $R_1 = 10 \Omega$ y $R_2 = 10 \Omega$ están en paralelo. ¿Cuál es la Resistencia Total en ohmios?</label>
+                <p class="text-sm text-gray-400">Pista: $\frac{1}{R_T} = \frac{1}{R_1} + \frac{1}{R_2}$. (Calcula $\frac{1}{R_T}$ y luego haz la inversa).</p>
+                <div class="flex gap-4">
+                    <input type="number" id="s4-q2" class="w-full bg-gray-700 p-2 rounded text-white" placeholder="Introduce tu respuesta (ej: 20)">
+                    <button onclick="checkAnswer('s4', 'q2', 5)" class="bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-4 rounded-lg">Comprobar</button>
+                </div>
+                <p id="feedback-s4-q2" class="font-semibold"></p>
+            </div>
+        </div>
+        
+        <!-- Pantalla Final -->
+        <div id="final" class="screen hidden space-y-6 text-center bg-gray-800 p-8 rounded-xl shadow-lg">
+            <h1 class="text-5xl font-bold text-green-400">🎉 ¡MISIÓN CUMPLIDA! 🎉</h1>
+            <p class="text-2xl text-gray-200">¡Enhorabuena, Técnico de Emergencia! Has resuelto todos los problemas eléctricos de la ciudad y evitado el gran apagón.</p>
+            <p class="text-lg text-gray-400">Has repasado con éxito la potencia, la energía y los circuitos en serie y paralelo.</p>
+            
+            <!-- ENLACE AL PDF AÑADIDO -->
+            <a href="TU_ENLAZAR_AL_PDF_AQUI.pdf" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="inline-block bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-lg text-xl mt-4">
+                📝 Descargar Ficha de Refuerzo
+            </a>
+            
+            <button onclick="location.reload()" class="bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-6 rounded-lg text-xl mt-4">
+                Volver a jugar
+            </button> <!-- FIX: Was </a -->
+        </div>
+        
+    </div>
+    
+    <script>
+        // Cargar MathJax para renderizar LaTeX
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+    
+    <script>
+        // Estado de la aplicación para rastrear el progreso
+        const appState = {
+            s1: { q1: false, q2: false, q3: false, completed: false },
+            s2: { q1: false, completed: false },
+            s3: { q1: false, completed: false },
+            s4: { q1: false, q2: false, completed: false }
+        };
+
+        // Función para mostrar/ocultar pantallas
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+            // Volver a renderizar MathJax si la pantalla tiene fórmulas
+            if (window.MathJax) {
+                window.MathJax.typesetPromise();
+            }
+        }
+
+        // --- Lógica para Estaciones 2 y 3 (Simulación) ---
+
+        function interactCircuit(type, bulbNum) {
+            if (type === 'series') {
+                // En serie, si quitas una, se apagan todas
+                document.getElementById('s2-bulb1').classList.replace('bulb-on', 'bulb-off');
+                document.getElementById('s2-bulb2').classList.replace('bulb-on', 'bulb-off');
+                document.getElementById('s2-bulb3').classList.replace('bulb-on', 'bulb-off');
+                const feedback = document.getElementById('feedback-s2-sim');
+                feedback.textContent = '¡Oh no! Al quitar una, se apagan todas.';
+                feedback.className = 'font-semibold text-lg text-center text-red-400';
+            } else if (type === 'parallel') {
+                // En paralelo, solo se apaga la que quitas
+                document.getElementById(`s3-bulb${bulbNum}`).classList.replace('bulb-on', 'bulb-off');
+                const feedback = document.getElementById('feedback-s3-sim');
+                feedback.textContent = `Has quitado la bombilla ${bulbNum}. ¡El resto sigue encendido!`;
+                feedback.className = 'font-semibold text-lg text-center text-green-400';
+            }
+        }
+        
+        function resetCircuit(type) {
+            if (type === 'series') {
+                document.getElementById('s2-bulb1').classList.replace('bulb-off', 'bulb-on');
+                document.getElementById('s2-bulb2').classList.replace('bulb-off', 'bulb-on');
+                document.getElementById('s2-bulb3').classList.replace('bulb-off', 'bulb-on');
+                document.getElementById('feedback-s2-sim').textContent = '';
+            } else if (type === 'parallel') {
+                document.getElementById('s3-bulb1').classList.replace('bulb-off', 'bulb-on');
+                document.getElementById('s3-bulb2').classList.replace('bulb-off', 'bulb-on');
+                document.getElementById('s3-bulb3').classList.replace('bulb-off', 'bulb-on');
+                document.getElementById('feedback-s3-sim').textContent = '';
+            }
+        }
+
+        // --- Lógica de Comprobación de Respuestas ---
+
+        function checkAnswer(station, question, correctAnswer) {
+            // *** FIX ***
+            // El ID del input es 's1-q1', no 's1-q1-input'. Se quita el '-input'
+            const input = document.getElementById(`${station}-${question}`);
+            const feedback = document.getElementById(`feedback-${station}-${question}`);
+            
+            // Usamos parseFloat para comparar números decimales
+            if (parseFloat(input.value) === correctAnswer) {
+                feedback.textContent = '¡Correcto! ✔️';
+                feedback.className = 'font-semibold text-green-400';
+                appState[station][question] = true;
+                input.disabled = true; // Bloquear respuesta correcta
+                checkStationComplete(station);
+            } else {
+                feedback.textContent = 'Respuesta incorrecta. ¡Inténtalo de nuevo! ❌';
+                feedback.className = 'font-semibold text-red-400';
+            }
+        }
+
+        function checkChoice(station, question, choice) {
+            const feedback = document.getElementById(`feedback-${station}-${question}`);
+            let correctAnswer;
+
+            // Definir respuestas correctas
+            if (station === 's1' && question === 'q3') correctAnswer = 'b';
+            if (station === 's2' && question === 'q1') correctAnswer = 'b';
+            if (station === 's3' && question === 'q1') correctAnswer = 'a';
+
+            // Deshabilitar todos los botones de opción
+            document.querySelectorAll(`#${station}-${question}-options button`).forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+            });
+            
+            // Encontrar el botón elegido y marcarlo
+            const chosenButton = document.querySelector(`#${station}-${question}-options button[onclick*="'${choice}'"]`);
+
+            if (choice === correctAnswer) {
+                feedback.textContent = '¡Correcto! ✔️';
+                feedback.className = 'font-semibold text-green-400';
+                chosenButton.classList.add('bg-green-600');
+                appState[station][question] = true;
+                checkStationComplete(station);
+            } else {
+                feedback.textContent = 'Respuesta incorrecta. ❌';
+                feedback.className = 'font-semibold text-red-400';
+                chosenButton.classList.add('bg-red-600');
+                // Resaltar la correcta
+                const correctButton = document.querySelector(`#${station}-${question}-options button[onclick*="'${correctAnswer}'"]`);
+                correctButton.classList.add('bg-green-600');
+            }
+        }
+
+        // --- Lógica de Progreso ---
+
+        function checkStationComplete(station) {
+            const s = appState[station];
+            // Comprobar si todas las preguntas de esa estación están correctas
+            let allComplete = true;
+            for (const key in s) {
+                if (key !== 'completed' && s[key] === false) {
+                    allComplete = false;
+                    break;
+                }
+            }
+            
+            if (allComplete) {
+                s.completed = true;
+                updateDashboard();
+                checkMissionComplete();
+            }
+        }
+
+        function updateDashboard() {
+            for (const stationKey in appState) {
+                // stationKey is 's1', 's2', 's3', 's4'
+                if (appState[stationKey].completed) {
+                    
+                    // *** FIX ***
+                    // The button IDs are "nav-station1", "nav-station2", etc.
+                    // The stationKey is "s1", "s2", etc.
+                    // We need to get the number from the key (e.g., '1' from 's1')
+                    const stationNum = stationKey.substring(1); // '1', '2', etc.
+                    
+                    const navButton = document.getElementById(`nav-station${stationNum}`);
+                    const statusText = document.getElementById(`status-${stationKey}`); // This was correct ('status-s1')
+                    
+                    // Add null checks just in case
+                    if (statusText) {
+                        statusText.textContent = '¡COMPLETADO!';
+                        statusText.className = 'text-lg font-bold text-green-400';
+                    }
+                    
+                    if (navButton) {
+                        navButton.classList.add('completed-glow', 'border-green-500');
+                    }
+                }
+            }
+        }
+        
+        function checkMissionComplete() {
+            if (appState.s1.completed && appState.s2.completed && appState.s3.completed && appState.s4.completed) {
+                // Pequeño retraso para que el jugador vea la última respuesta correcta
+                setTimeout(() => {
+                    showScreen('final');
+                }, 1000);
+            }
+        }
+
+        // Iniciar la aplicación en la pantalla de inicio
+        document.addEventListener('DOMContentLoaded', () => {
+            showScreen('home');
+        });
+    </script>
+</body>
+</html>
+
+
